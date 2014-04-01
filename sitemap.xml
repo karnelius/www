@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
+<url>
+  <loc>http://alexchat.net/</loc>
+</url>
+<url>
+  <loc>http://alexchat.net/index.php</loc>
+</url>
+<url>
+  <loc>http://alexchat.net/registration.php</loc>
+</url>
+<url>
+  <loc>http://alexchat.net/blog.php?page=1</loc>
+</url>
+<url>
+  <loc>http://alexchat.net/messages.php</loc>
+</url>
+<url>
+  <loc>http://alexchat.net/registration.php?remember</loc>
+</url>
+<url>
+  <loc>http://alexchat.net/blog.php?id=30</loc>
+</url>
+<url>
+  <loc>http://alexchat.net/about.php</loc>
+</url>
+<url>
+  <loc>http://alexchat.net/test.php</loc>
+</url>
+<url>
+  <loc>http://alexchat.net/blog.php?id=32</loc>
+</url>
+<url>
+  <loc>http://alexchat.net/blog.php?author=Keable</loc>
+</url>
+<url>
+  <loc>http://alexchat.net/blog.php?id=31</loc>
+</url>
+<url>
+  <loc>http://alexchat.net/blog.php?author=administrator</loc>
+</url>
+<url>
+  <loc>http://alexchat.net/index.php?view=lisa</loc>
+</url>
+<url>
+  <loc>http://alexchat.net/index.php?view=administrator</loc>
+</url>
+<url>
+  <loc>http://alexchat.net/index.php?view=Keable</loc>
+</url>
+<url>
+  <loc>http://alexchat.net/index.php?view=Mylasha</loc>
+</url>
+</urlset>

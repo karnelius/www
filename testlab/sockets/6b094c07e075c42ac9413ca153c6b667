@@ -1,0 +1,8 @@
+{action: "Print", params: {message: "И снова здравствуйте"}}
+{action: "Print", params: {message: "пишу из оперы"}}
+{action: "Print", params: {message: "там уже скопился стек действий"}}
+{action: "Print", params: {message: "это был хром?"}}
+{action: "Print", params: {message: "получишь ли ты это сообщение?"}}
+{action: "Print", params: {message: "смотрим"}}
+{action: "Print", params: {message: "54"}}
+{action: "Print", params: {message: "5"}}

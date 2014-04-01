@@ -1,0 +1,57 @@
+@charset "utf-8";
+/* CSS Document */
+
+body {
+	background: url(../images/bottom_texture.jpg) fixed  ;
+	
+}
+html, body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+
+blockquote {
+	background:  #93c7d7;
+	background-image: url(../images/postquote.png);
+	background-position:top left;
+	background-repeat:no-repeat;
+}
+
+.auto_header, .top_menu, .page, .page_left, .footer {
+	overflow:none;
+	border-radius: 6px; 
+	behavior: url('styles/border-radius.htc');
+}
+
+.page_left, {
+	overflow:none;
+	border-radius: 5px; 
+	behavior: url('styles/border-radius.htc');
+}
+
+a > img {
+	border: none;
+}
+
+.page_bottom {
+	background:url(../images/naw_page.png) repeat-x;
+}
+/*Для 2го заднего фона */
+
+.ie_background {
+position: relative;
+width: 100%;
+min-height:656px;
+background:url(../images/back_left.png) no-repeat fixed;
+z-index: 0;
+padding: 10px 0;
+}
+.auto_header {
+	margin-top: 0;
+}
+.buttons_big {
+	overflow:none;
+	border-radius: 4px; 
+	behavior: url('styles/border-radius.htc');
+}

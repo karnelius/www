@@ -1,3 +1,7 @@
+<?php
+require_once '../elements/phpself.php';
+?>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -49,6 +53,9 @@
 				 * Настройка AJAX
 				 */
 				$.ajaxSetup({url: 'server.php', type: 'post', dataType: 'json'});
+				
+				//подключаемся к серверу сразу
+				user.Connect();
 				
 				/*
 				 * События кнопок и поля ввода
@@ -163,7 +170,7 @@
 						log.print('Connecting...');
 						user.busy = true;
 						$.ajax({
-							data: 'action=Connect',
+							data: 'action=Connect&user=<?php echo $user; ?>',
 							success: user.onSuccess,
 							complete: user.onComplete
 						});
@@ -234,12 +241,13 @@
 	</head>
 	
 	<body>
-    
+    <?php echo "Пользователь ".$user."<br />"; ?>
 		<input id="btnConnect" type="button" value="Connect" />
 		<input id="btnDisconnect" type="button" value="Disconnect" />
 		<div id="log"></div>
-		message:<input id="input" type="text" /> 
-        name:<input id="name" type="text" />
+		message:<input id="input" type="text" /> <br />
+        name:<input id="name" type="text" value="<?php echo $user; ?>" /><br />
+        to:<input id="to" type="text" /><br />
 		<input id="btnSend" type="button" value="Send" />
         <div id="signal" ><p>Консоль</p></div>
 	</body>

@@ -1,5 +1,7 @@
 <?php
-
+/*
+ * Чат основан на статье http://habrahabr.ru/post/41223/
+ */
 class Server {
 	/*
 	 * Пишу свою историю событий в файл ready.log
@@ -76,7 +78,8 @@ class Server {
 	 * Создает соккет и отправляет его идентификатор клиенту.
 	 */
 	static function actionConnect() {
-		$sock = md5(microtime().rand(1, 1000));
+		//$sock = md5(microtime().rand(1, 1000));
+		$sock = $_POST['user'];
 		fclose(fopen('sockets/'.$sock, 'a+b'));
 		self::AddToSock('Print', 'message: "Client connected."', $sock);
 		self::AddToSend('Connect', 'sock: "'.$sock.'"');
@@ -106,7 +109,7 @@ class Server {
 		if (strlen($data)) {
 			self::AddToSock('Print', 'message: "'.$data.'"', $sock);
 			self::AddToSend('Print', 'message: "'.$data.'"');
-			self::Log('Print '. 'message: "'.$data.'"', $sock);
+			self::Log('Print(log) '. 'message: "'.$data.'"', $sock);
 		}
 	}
 	

@@ -21,16 +21,12 @@ function start() {
 <source src="media/button1.wav" type="audio/wav"  />
 </audio>
 <a href="#" onclick="start()">Играй же ж</a>
-<?php
-$string = "run";
-if(is_callable($string)) $string();
-else echo "Функция не запусталась";
-
-function run() {
-	echo "некоторая функция run() была запущена";
+<script type="text/javascript" >
+function radio() {
+	write('ХО-ХО!');
 }
-
-?>
+alert(typeof radio );
+</script>
 <a href="https://github.com/progit/progit/blob/master/ru/02-git-basics/01-chapter2.markdown">нужная ссылка</a>
 
 </body>

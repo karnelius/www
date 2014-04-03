@@ -6,3 +6,7 @@
 {action: "Print", params: {message: "смотрим"}}
 {action: "Print", params: {message: "54"}}
 {action: "Print", params: {message: "5"}}
+{action: "Print", params: {message: "Client connected."}}
+{action: "Print", params: {message: "аыаыуаыуаыа"}}
+{action: "Print", params: {message: "Client connected."}}
+{action: "Print", params: {message: "аыаыа"}}

@@ -205,11 +205,13 @@ require_once '../elements/phpself.php';
 					document.getElementById('signal').innerHTML += myDate() +' :Запущена функция Send() - отправка данных на сервер:<br />';
 					if (user.conn) {
 						var data = $.trim($('#input').val());
+						var to = 'client';
+						var to = $.trim($('#to').val());
 						if (!data) {
 							return;
 						}
 						$.ajax({
-							data: 'action=Send&sock='+user.sock+'&data='+data,
+							data: 'action=Send&sock='+user.sock+'&data='+data+'&to='+to,
 							success: user.onSuccess,
 							complete: user.onComplete
 						});

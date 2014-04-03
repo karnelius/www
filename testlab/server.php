@@ -105,6 +105,7 @@ class Server {
 	 */
 	static function actionSend() {
 		$sock = $_POST['sock'];
+		$to = htmlspecialchars(trim($_POST['to']), ENT_QUOTES);
 		$data = htmlspecialchars(trim($_POST['data']), ENT_QUOTES);
 		if (strlen($data)) {
 			self::AddToSock('Print', 'message: "'.$data.'"', $sock);

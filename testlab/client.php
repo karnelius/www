@@ -91,7 +91,7 @@ require_once '../elements/phpself.php';
 			var actions = {
 				
 				Connect: function(params) {
-					log.print('Connected.');
+					log.print('Connected.'+params.date);
 					log.print('Sock: '+params.sock);
 					user.sock = params.sock;
 					user.conn = true;
@@ -99,11 +99,11 @@ require_once '../elements/phpself.php';
 				},
 				
 				Disconnect: function(params) {
-					log.print('Disconnected.');
+					log.print('Disconnected.'+params.date);
 				},
 				
 				Print: function(params) {
-					log.print(params.message);
+					log.print(params.user + " to "+ params.to + ": "+ params.message+ " <small> "+params.date+"</small>");
 				}
 				
 			};
@@ -125,7 +125,7 @@ require_once '../elements/phpself.php';
 				 * Эта функция обрабатывает приходящие с сервера действия и выполняет их.
 				 */
 				onSuccess: function(data) {
-					document.getElementById('signal').innerHTML += myDate() +' :Запущена функция onSuccess() - обработка приходящих просов:<br />';
+					document.getElementById('signal').innerHTML += myDate() +' :Запущена функция onSuccess() - обработка приходящих просов:'+data.actions[0].params.message+'<br />';
 					if (typeof data.actions == 'object') {
 						for (var i = 0; i < data.actions.length; i++) {
 							if (typeof actions[data.actions[i].action] == 'function') {

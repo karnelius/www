@@ -81,8 +81,8 @@ class Server {
 		//$sock = md5(microtime().rand(1, 1000));
 		$sock = $_POST['user'];
 		fclose(fopen('sockets/'.$sock, 'a+b'));
-		self::AddToSock('Print', 'message: "Client connected."', $sock);
-		self::AddToSend('Connect', 'sock: "'.$sock.'"');
+		self::AddToSock('Print', 'message: "Client connected.", date: "12.04.2014"', $sock);
+		self::AddToSend('Connect', 'sock: "'.$sock.'", date: "12.04.2014"');
 		self::Log("Connect client: $sock -//- actionConnect()");
 	}
 	
@@ -94,8 +94,8 @@ class Server {
 	static function actionDisconnect() {
 		$sock = $_POST['sock'];
 		unlink('sockets/'.$sock);
-		self::AddToSock('Print', 'message: "Client disconnected."');
-		self::AddToSend('Disconnect');
+		self::AddToSock('Print', 'message: "Client disconnected.", date: "12.04.2014"');
+		self::AddToSend('Disconnect', 'date: "12.04.2014"');
 		self::Log("Connect client: $sock -//- actionDisconnect()");
 	}
 	
@@ -106,11 +106,12 @@ class Server {
 	static function actionSend() {
 		$sock = $_POST['sock'];
 		$to = htmlspecialchars(trim($_POST['to']), ENT_QUOTES);
+		$date = date('Y.m.d  H:i:s');
 		$data = htmlspecialchars(trim($_POST['data']), ENT_QUOTES);
 		if (strlen($data)) {
-			self::AddToSock('Print', 'message: "'.$data.'"', $sock);
-			self::AddToSend('Print', 'message: "'.$data.'"');
-			self::Log('Print(log) '. 'message: "'.$data.'"', $sock);
+			self::AddToSock('Print', 'user: "'.$sock.'", message: "'.$data.'", to: "'.$to.'", date: "'.$date.'"', $sock);
+			self::AddToSend('Print', 'user: "'.$sock.'", message: "'.$data.'", to: "'.$to.'", date: "'.$date.'"');
+			self::Log('Print(log) '. 'user: "'.$sock.'", message: "'.$data.'", to: "'.$to.'", date: "'.$date.'"', $sock);
 		}
 	}
 	

@@ -21,12 +21,14 @@ function start() {
 <source src="media/button1.wav" type="audio/wav"  />
 </audio>
 <a href="#" onclick="start()">Играй же ж</a>
-<script type="text/javascript" >
-function radio() {
-	write('ХО-ХО!');
-}
-alert(typeof radio );
-</script>
+<?php
+require_once 'elements/base.php';
+		$sock = 'Polson';
+		$to = 'lisa';
+		$result = mysql_query("SELECT * FROM `messages` WHERE `sender`='$sock' AND `recipient`='$to' OR `sender`='$to' AND `recipient`='$sock' ORDER BY `id`");
+		$rows = mysql_num_rows($result);
+		echo $rows;
+?>
 <a href="https://github.com/progit/progit/blob/master/ru/02-git-basics/01-chapter2.markdown">нужная ссылка</a>
 
 </body>

@@ -67,7 +67,7 @@ class Server {
 	 */
 	static function Send() {
 		if (self::$actions) {
-			self::Log('{actions: ['.implode(', ', self::$actions).']}');
+			//self::Log('{actions: ['.implode(', ', self::$actions).']}');
 			exit('{actions: ['.implode(', ', self::$actions).']}');
 		}
 	}
@@ -78,12 +78,23 @@ class Server {
 	 * Создает соккет и отправляет его идентификатор клиенту.
 	 */
 	static function actionConnect() {
-		//$sock = md5(microtime().rand(1, 1000));
 		$sock = $_POST['user'];
-		fclose(fopen('sockets/'.$sock, 'a+b'));
+		$to = $_POST['to'];
+		if(!file_exists('sockets/'.$sock)) {
+			fclose(fopen('sockets/'.$sock, 'a+b'));
+		}	
 		self::AddToSock('Print', 'message: "Client connected.", date: "12.04.2014"', $sock);
 		self::AddToSend('Connect', 'sock: "'.$sock.'", date: "12.04.2014"');
-		self::Log("Connect client: $sock -//- actionConnect()");
+		//идем в базу за сообщениями
+		require_once '../elements/base.php';
+		$result = mysql_query("SELECT * FROM `messages` WHERE `sender`='$sock' AND `recipient`='$to' OR `sender`='$to' AND `recipient`='$sock' ORDER BY `id`");
+		$rows = mysql_num_rows($result);
+		for ($i = 0; $i < $rows; ++$i) {
+			$row = mysql_fetch_row($result);
+			self::AddToSend('Print', 'user: "'.$row[1].'", message: "'.$row[3].'", to: "'.$row[2].'", date: "'.$row[5].'"');
+		}
+		self::Log("Connect client: $sock -//- actionConnect()"); 
+		
 	}
 	
 	/*
@@ -91,6 +102,7 @@ class Server {
 	 * Отсоединение от сервера.
 	 * Удаляет соккет.
 	 */
+	 //функция будет удалена
 	static function actionDisconnect() {
 		$sock = $_POST['sock'];
 		unlink('sockets/'.$sock);
@@ -103,6 +115,7 @@ class Server {
 	 * Действие.
 	 * Отправляет введенные данные всем клиентам.
 	 */
+	 //разбирает POST, отправляет сообщения адресату и отправителю. 
 	static function actionSend() {
 		$sock = $_POST['sock'];
 		$to = htmlspecialchars(trim($_POST['to']), ENT_QUOTES);
@@ -133,7 +146,6 @@ class Server {
 				$data = trim($data, "\r\n");
 				foreach (explode("\r\n", $data) as $action) {
 					self::$actions[] = $action;
-					self::Log('explode return \'action\': '.$action.'from '.$data);
 				}
 				self::Send();
 			}

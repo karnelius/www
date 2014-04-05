@@ -121,6 +121,8 @@ require_once '../elements/phpself.php';
 				
 				read: null,
 				
+				to: "<?php echo $_GET['to']; ?>",
+				
 				/*
 				 * Эта функция обрабатывает приходящие с сервера действия и выполняет их.
 				 */
@@ -170,7 +172,7 @@ require_once '../elements/phpself.php';
 						log.print('Connecting...');
 						user.busy = true;
 						$.ajax({
-							data: 'action=Connect&user=<?php echo $user; ?>',
+							data: 'action=Connect&user=<?php echo $user; ?>'+'&to='+user.to,
 							success: user.onSuccess,
 							complete: user.onComplete
 						});
@@ -205,13 +207,12 @@ require_once '../elements/phpself.php';
 					document.getElementById('signal').innerHTML += myDate() +' :Запущена функция Send() - отправка данных на сервер:<br />';
 					if (user.conn) {
 						var data = $.trim($('#input').val());
-						var to = 'client';
-						var to = $.trim($('#to').val());
+						//var to = $.trim($('#to').val());
 						if (!data) {
 							return;
 						}
 						$.ajax({
-							data: 'action=Send&sock='+user.sock+'&data='+data+'&to='+to,
+							data: 'action=Send&sock='+user.sock+'&data='+data+'&to='+user.to,
 							success: user.onSuccess,
 							complete: user.onComplete
 						});

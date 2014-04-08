@@ -250,7 +250,6 @@ require_once '../elements/phpself.php';
 		<div id="log"></div>
 		message:<input id="input" type="text" /> <br />
         name:<input id="name" type="text" value="<?php echo $user; ?>" /><br />
-        to:<input id="to" type="text" /><br />
 		<input id="btnSend" type="button" value="Send" />
         <div id="signal" ><p>Консоль</p></div>
 	</body>

@@ -215,3 +215,4 @@ pip-log.txt
 .mr.developer.cfg
 /testlab/sockets
 /test.php
+/sockets

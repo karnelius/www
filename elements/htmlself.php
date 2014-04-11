@@ -6,15 +6,16 @@
 <link type="text/css" rel="stylesheet" href="styles/main.css" />
 <link rel="shortcut icon" href="images/icon.ico" type="image/x-icon" />
 <!--[if IE]> <link rel="stylesheet" type="text/css" href="styles/ie_wtf.css" /> <![endif]-->
-
+<script src="js/jquery.js" type="text/javascript" > </script>
 <script src="js/functions.js" type="text/javascript" > </script>
+<script src="js/dialogues2.js" type="text/javascript" > </script>
+
 <?php echo $script; ?>
 
 
 </head>
 
 <body>
-<div class='ie_background'>
 <div class='auto_header' >
 		<h1 class='logo_name' >Alex chat</h1>
         <h2 class='logo_text' >Своя сеть, с Блек-Джеком и шлюхами</h2>
@@ -60,13 +61,15 @@
 		<div class="no_float"></div>
             <div class="footer">
                 <div class="footer_text" >
-                    <p><a href="#">Раз</a> | <a href="about.php">О сайте</a> | <a href="test.php">Тест</a></p>
+                    <p><a href="index.php" id='user' ><?php echo $user; ?></a> | <a href="about.php">О сайте</a> | <a href="test.php">Тест</a></p>
                     <p>Bender © 2013. All Rights Reserved.</p>
               </div><!-- /'footer_text' -->
             </div><!-- /'rooter' -->
 </div><!-- /'page' -->
 <?php echo $onlineScript; ?>
-</div><!-- /ie_background-->
-<div class='devellopt' ><strong>Трепещите!</strong><p>К выходу готовится новый чат на WebSocket!</p></div><!-- /.devellopt-->
+<audio id='myAudio'  >
+<source src='media/button1.mp3' type='audio/mpeg'  />
+<source src='media/button1.wav' type='audio/wav'  /> 
+</audio>
 </body>
 </html>

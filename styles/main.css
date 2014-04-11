@@ -274,8 +274,6 @@ content: '';
 }
 
 .input_dialog {
-	width: 150px;
-	float:right;
 	padding-left: 5px;
 	border: 1px solid #568495;
 	border-radius: 5px;
@@ -731,4 +729,42 @@ form {
 	color: #FF3;
 	text-shadow: 2px 1px 4px black,  2px 1px 1em #0000FF;
 	font-size:13px;
+}
+/* выпрыгивающее окошко сообещний*/
+#dial_info {
+	width:200px;
+	border-bottom: 5px solid #066;
+	color: #9bbac5;
+	font-size: 12px;
+	border-radius: 8px 0 0 0;
+	display:block;
+	position:fixed;
+	bottom: 5%;
+	right: 5%;
+	z-index: 100;
+}
+.dial_info_head {
+	height:24px;
+	width:200px;
+	background:#066;
+	border-radius: 6px 0 0 0;
+	display:table-cell;
+	line-height:24px;
+}
+#dial_ico {
+	margin: 5px 7px 0 4px;
+	
+}
+.dial_info_cont {
+	height: 70px;
+	padding: 5px 8px 5px 5px;
+	line-height: 1.3em;
+	background:#9bbac5;
+}
+.dial_info_cont a {
+	color: #066;
+	text-decoration:none;
+}
+.dial_info_cont img {
+	margin: 5px;
 }

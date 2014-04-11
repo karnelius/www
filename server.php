@@ -77,20 +77,21 @@ class Server {
 		if($sock != '')
 			fclose(fopen('sockets/'.$sock, 'a+b'));
 		//идем в базу за сообщениями
-		require_once '../elements/base.php';
-		@$result = mysql_query("SELECT * FROM `messages` WHERE `sender`='$sock' AND `recipient`='$to' OR `sender`='$to' AND `recipient`='$sock' ORDER BY `id`");
-		if($result) {
-			$rows = mysql_num_rows($result);
-			for ($i = 0; $i < $rows; ++$i) {
-				$row = mysql_fetch_row($result);
-				self::AddToSend('Print', 'user: "'.$row[1].'", message: "'.$row[3].'", to: "'.$row[2].'", date: "'.$row[5].'"');
+		if ($to != "") {
+			require_once 'elements/base.php';
+			@$result = mysql_query("SELECT * FROM `messages` WHERE `sender`='$sock' AND `recipient`='$to' OR `sender`='$to' AND `recipient`='$sock' ORDER BY `id`");
+			if($result) {
+				$rows = mysql_num_rows($result);
+				for ($i = 0; $i < $rows; ++$i) {
+					$row = mysql_fetch_row($result);
+					self::AddToSend('Print', 'user: "'.$row[1].'", message: "'.$row[3].'", to: "'.$row[2].'", date: "'.$row[5].'"');
+				}
 			}
 		}
-		if($result) {
 			self::AddToSock('SystemPrint', 'message: "Client connected.", date: "12.04.2014"', $sock);
 			self::AddToSend('Connect', 'sock: "'.$sock.'", date: "12.04.2014"');
 			self::Log("Connect client: $sock -//- actionConnect()"); 
-		}
+		
 		
 	}
 	/*
@@ -105,7 +106,7 @@ class Server {
 		$data = htmlspecialchars(trim($_POST['data']), ENT_QUOTES);
 		//добавляем в базу и в сокет получателю
 		if (strlen($data) && isset($to)) {
-			require_once '../elements/base.php';
+			require_once 'elements/base.php';
 			$result = mysql_query("INSERT INTO `messages` VALUES (NULL, '$sock', '$to', '$data', '', '$date', 0, 0)");
 			self::AddToSock('Print', 'user: "'.$sock.'", message: "'.$data.'", to: "'.$to.'", date: "'.$date.'"', $to);
 			self::AddToSend('Print', 'user: "'.$sock.'", message: "'.$data.'", to: "'.$to.'", date: "'.$date.'"');

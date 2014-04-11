@@ -1,112 +1,78 @@
-<?php
-require_once '../elements/phpself.php';
-?>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
-	
-	<head>
-		<title>Socket App Client</title>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<meta name="author" content="Melnaron" />
-		<link rel="stylesheet" type="text/css" href="css/style.css" />
-		<style type="text/css">
-			
-			#log {
-				border: 1px solid #999999;
-				height: 350px;
-				width: 300px;
-				overflow: auto;
-				margin: 10px 0;
-				background: #66CDAA;
-			}
-			#signal {
-				width:600px;
-				height:200px;
-				margin:10px auto;
-				background:#CCC;
-				font-family:"Courier New", Courier, monospace;
-				font-size:12px;
-				overflow: auto;
-				border:2px solid #999;
-				border-radius: 5px;
-				padding: 3px;
-			}
-			#signal p {
-				font-size:14px;
-				margin-top: 0;
-				text-align:center;
-				font-weight: bold;
-			}
-			.left, .right {
-				
-				border-radius: 4px;
-				padding: 4px;
-				margin: 4px;
-			}
-			.left {
-				background: #7FFFD4;
-				margin-right: 25px;
-			}
-			.right {
-				background: #7FFFD4;
-				margin-left: 25px;
-			}
-		</style>
-		<script type="text/javascript" src="lib/jquery.js"></script>
-		<script type="text/javascript">
-			function myDate() {
+//эта функция будет удалена
+function signal(string) {
 				var dat = new Date();
-				document.getElementById('signal').scrollTop = 999999;
-				return  dat.getHours() + ':' + dat.getMinutes() + ':' + dat.getSeconds();
+				date = dat.getHours() + ':' + dat.getMinutes() + ':' + dat.getSeconds();
+				if(document.getElementById('signal')) {
+					document.getElementById('signal').innerHTML += date + ': '+string+'<br />';
+					document.getElementById('signal').scrollTop = 999999;
+				}
 			}
 			
+
+/*************************************************/			
 			$(document).ready(function() {
 				
+			myUser = document.getElementById('user') ? document.getElementById('user').innerHTML : false;
+			myTo =  document.getElementById('get_to') ? document.getElementById('get_to').innerHTML : "";
 				/*
 				 * Настройка AJAX
 				 */
+				 //if(myUser) {
 				$.ajaxSetup({url: 'server.php', type: 'post', dataType: 'json'});
-				
 				//подключаемся к серверу сразу
-				user.Connect();
+				 //}
 				
 				/*
 				 * События кнопок и поля ввода
 				 */
-				$('#btnConnect').click(user.Connect);
-				$('#btnDisconnect').click(user.Disconnect);
+				 
 				$('#btnSend').click(user.Send);
 				$('#input')
 					.keydown(function(e){ if (e.keyCode == 13) { user.Send(); return false; } })
 					.keypress(function(e){ if (e.keyCode == 13) { return false; } })
 					.keyup(function(e){ if (e.keyCode == 13) { return false; } })
 				;
-				
+				 
+				 user.Connect();
 			});
 			
-		</script>
-		<script type="text/javascript">
 			
 			/*
-			 * Лог
+			 * Печать сообщений в диалоге
 			 */
 			var log = {
 				
 				print: function(s) {
+					if(document.getElementById('log')) {
 					$('#log').append('<div>'+s+'</div>').get(0).scrollTop += 100;
+					}
+					//else alert(s);
 				}
 				
 			};
 			
+			/*
+			 * Печать/удаление окошка с ообщением снизу. 
+			*/
+			var flash = {
+				show: function(params) {
+					if(document.getElementById('dial_info')) 
+					 flash.remove();
+					document.body.innerHTML +="<div id='dial_info' ><div class='dial_info_head' ><img src='images/icon.png' style='float:left;' id='dial_ico' /><strong>Message</strong><img src='images/close_3-32.png' style='float:right;cursor:pointer;' onclick='flash.remove()'  /></div><div class='dial_info_cont'><a href='dialogues.php?to="+params.user+"' ><strong><img src='images/users/mini/"+params.user+".jpg' alt='' style='float:left;' />"+params.user+": </strong>"+params.message+"</a></div></div>";
+					//document.getElementById('myAudio').play();
+					
+				},
+				remove: function() {
+					elem = document.getElementById('dial_info');
+					return elem.parentNode ? elem.parentNode.removeChild(elem) : elem;
+					}
+			};
 			/*
 			 * Действия присылаемые с сервера
 			 */
 			var actions = {
 				
 				Connect: function(params) {
-					log.print('Connected.'+params.date);
 					log.print('Sock: '+params.sock);
 					user.sock = params.sock;
 					user.conn = true;
@@ -114,14 +80,15 @@ require_once '../elements/phpself.php';
 				},
 				
 				Print: function(params) {
-					if(params.user == user.sock) {
+					if(params.user.toUpperCase() == user.sock.toUpperCase() && params.to.toUpperCase() == user.to.toUpperCase()) {
 						
 						log.print('<div class="left" ><strong>'+params.user + '</strong>: '+params.message+'</div>');
 					}
-					else {
+					else if(params.to.toUpperCase() == user.sock.toUpperCase() && params.user.toUpperCase() == user.to.toUpperCase()) {
 						log.print('<div class="right" ><strong>'+params.user + '</strong>: '+params.message+'</div>');
-						document.getElementById('signal').innerHTML += myDate() +' :Условие сработало() - автор это он:'+params.user+' '+user.sock+'<br />';
 					}
+					else flash.show(params);
+				
 				},
 				
 				SystemPrint: function(params) {
@@ -135,7 +102,7 @@ require_once '../elements/phpself.php';
 			 */
 			var user = {
 				
-				sock: "<?php echo $user; ?>",
+				sock: null,
 				
 				conn: false,
 				
@@ -143,13 +110,13 @@ require_once '../elements/phpself.php';
 				
 				read: null,
 				
-				to: "<?php echo $_GET['to']; ?>",
+				to: '',
 				
 				/*
 				 * Эта функция обрабатывает приходящие с сервера действия и выполняет их.
 				 */
 				onSuccess: function(data) {
-					document.getElementById('signal').innerHTML += myDate() +' :Запущена функция onSuccess() - обработка приходящих просов:'+data.actions[0].params.message+'<br />';
+					signal('Запущена функция onSuccess() - обработка приходящих просов:'+data.actions[0]);
 					if (typeof data.actions == 'object') {
 						for (var i = 0; i < data.actions.length; i++) {
 							if (typeof actions[data.actions[i].action] == 'function') {
@@ -163,7 +130,7 @@ require_once '../elements/phpself.php';
 				 * Эта функция выполняется по завершении ajax-запроса.
 				 */
 				onComplete: function(xhr) {
-					document.getElementById('signal').innerHTML += myDate() +' :Запущена функция onComplete() - завершение ajax запроса:<br />';
+					signal('Запущена функция onComplete() - завершение ajax запроса');
 					if (xhr.status == 404) {
 						actions.Disconnect();
 					}
@@ -176,7 +143,8 @@ require_once '../elements/phpself.php';
 				 * При неудачном (!=200) возобновление через 5 секунд.
 				 */
 				onCompleteRead: function(xhr) {
-					document.getElementById('signal').innerHTML += myDate() +' :Запущена функция onCompleteRead() - завершение слушания:<br />';
+					signal('Запущена функция onCompleteRead() - завершение слушания');
+					
 					if (xhr.status == 200) {
 						user.Read();
 					} else {
@@ -189,15 +157,17 @@ require_once '../elements/phpself.php';
 				 * Соединение с сервером.
 				 */
 				Connect: function() {
-					document.getElementById('signal').innerHTML += myDate() +' :Запущена функция Connect() - присоединение к серверу:<br />';
+					signal('Запущена функция Connect() - присоединение к серверу');
 					if (user.conn == false && user.busy == false) {
-						log.print('Connecting...');
 						user.busy = true;
+						user.sock = myUser;
+						user.to = myTo;
 						$.ajax({
 							data: 'action=Connect&user='+user.sock+'&to='+user.to,
 							success: user.onSuccess,
 							complete: user.onComplete
 						});
+						
 					}
 				},
 				
@@ -206,7 +176,7 @@ require_once '../elements/phpself.php';
 				 * Отправка данных на сервер.
 				 */
 				Send: function() {
-					document.getElementById('signal').innerHTML += myDate() +' :Запущена функция Send() - отправка данных на сервер:<br />';
+					signal('Запущена функция Send() - отправка данных на сервер');
 					if (user.conn) {
 						var data = $.trim($('#input').val());
 						//var to = $.trim($('#to').val());
@@ -229,7 +199,7 @@ require_once '../elements/phpself.php';
 				 * Прослушивание соккета.
 				 */
 				Read: function() {
-					document.getElementById('signal').innerHTML += myDate() +' :Запущена функция Read() - прослушивание сокета:<br />';
+					signal('Запущена функция Read() - прослушивание сокета');
 					if (user.conn) {
 						user.read = $.ajax({
 							data: 'action=Read&sock='+user.sock,
@@ -242,14 +212,3 @@ require_once '../elements/phpself.php';
 				
 			};
 			
-		</script>
-	</head>
-	
-	<body>
-		<div id="log"></div>
-		message:<input id="input" type="text" /> <br />
-		<input id="btnSend" type="button" value="Send" />
-        <div id="signal" ><p>Консоль</p></div>
-	</body>
-	
-</html>

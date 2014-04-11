@@ -1,128 +1,214 @@
-// JavaScript Document
-var lastId = 0; //счетчик входящих
-var newLastId = 0; //считает недавние сообщения. сравнивает со счетчиком входящих
-var numNew = 0; //количество новых сообщений в <title>
-var maxId = 0; // максимальный id. возвращаем его на сервер
-
-
-//функции подгрузки сообщений 
-
-function send()
-{
-var mess = document.getElementById('mess_to_send').value //получаем текст сообщения
-var	recip = document.getElementById('get_to').innerHTML //берем имя того, кому мы пишем. 
-
-	a = {'recip' : recip , 'mess' : mess }; //собираем джейсон для отправки
-
-	var aString = JSON.stringify(a);	//делаем джейсон строкой
-	params = 'mess=' +aString; //собираем строку запроса для отправки на add_mess.php
-	
-	
-	request = new ajaxRequest()
-	request.open('POST', 'elements/add_mess.php', true)
-	request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
-request.onreadystatechange = function()
-{
-	 if (this.readyState == 4) //дожидаемся завершения запроса
-	{
-		if(this.status == 200)
-		{
-			if(this.responseText != null)
-			{
-				document.getElementById('info').innerHTML = this.responseText //выводим ответ в блок messages
-			
-			document.getElementById('mess_to_send').value = ''	//очищаем поле ввода сообщений
-			//load_messes() //включаем функция загрузки сообщений из базы
+//эта функция будет удалена
+function signal(string) {
+				var dat = new Date();
+				date = dat.getHours() + ':' + dat.getMinutes() + ':' + dat.getSeconds();
+				if(document.getElementById('signal')) {
+					document.getElementById('signal').innerHTML += date + ': '+string+'<br />';
+					document.getElementById('signal').scrollTop = 999999;
+				}
 			}
-			else alert('Ошибка Ajax: Данные не получены')
-		}
-		else alert('Ошибка Ajax: Мир не совершенен :('+ this.statusText)
-	}
-}
-request.send(params)
-
-}
-
-
-
-
-
-
-//функция загрузки сообщений
-
-	function load_messes()
-	{
-	var chatBox = document.getElementById('messages');
-	var get_to = document.getElementById('get_to').innerHTML
-	var params = 'to='+get_to+'&id='+maxId; //запрос прост
-	request = new ajaxRequest()
-	request.open('POST', 'elements/load_messes.php', true)
-	request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
-	request.setRequestHeader("Content-length", params.length)
-request.setRequestHeader("Connection", "close")
-request.onreadystatechange = function()
-{
-	 if (this.readyState == 4) 
-	{
-		if(this.status == 200)
-		{
-			if(this.responseText != null)
-			{
-				var mystring = this.responseText //получаем джейсон с сообщениями
-				
-				text = JSON.parse(mystring);  
-				answer = ''
 			
-				for (i = 0 ; i < text.length; ++i)
-				{
-					if(text[i]['author'].toUpperCase()==get_to.toUpperCase()) { //мне письмо 
-					answer += '<div class="author_mess" ><strong>'+ text[i]['author']
-					+  '</strong>: ' + text[i]['message'] + '</div>';
-					newLastId = text[i]['id'];	//если от собеседника еще одно письмо
+
+/*************************************************/			
+			$(document).ready(function() {
+				
+			myUser = document.getElementById('user') ? document.getElementById('user').innerHTML : false;
+			myTo =  document.getElementById('get_to') ? document.getElementById('get_to').innerHTML : "";
+				/*
+				 * Настройка AJAX
+				 */
+				 if(myUser) {
+				$.ajaxSetup({url: 'server.php', type: 'post', dataType: 'json'});
+				//подключаемся к серверу сразу
+				 }
+				
+				/*
+				 * События кнопок и поля ввода
+				 */
+				 if($('#btnSend')) {
+				$('#btnSend').click(user.Send);
+				$('#input')
+					.keydown(function(e){ if (e.keyCode == 13) { user.Send(); return false; } })
+					.keypress(function(e){ if (e.keyCode == 13) { return false; } })
+					.keyup(function(e){ if (e.keyCode == 13) { return false; } })
+				;
+				 }
+				 user.Connect();
+			});
+			
+			
+			/*
+			 * Печать сообщений в диалоге
+			 */
+			var log = {
+				
+				print: function(s) {
+					if(document.getElementById('log')) {
+					$('#log').append('<div>'+s+'</div>').get(0).scrollTop += 100;
 					}
-					else { //от меня
-					//не прочитанное:
-					if(text[i]['status'] == 0) {
-						 answer += '<div class="recip_mess no_read" ><strong>' + text[i]['author'] 
-						 +'</strong>: '+text[i]['message'] + '</div>';
-						 
+					//else alert(s);
+				}
+				
+			};
+			
+			/*
+			 * Печать/удаление окошка с ообщением снизу. 
+			*/
+			var flash = {
+				show: function(params) {
+					if(document.getElementById('dial_info')) 
+					 flash.remove();
+					document.body.innerHTML +="<div id='dial_info' ><div class='dial_info_head' ><img src='images/icon.png' style='float:left;' id='dial_ico' /><strong>Message</strong><img src='images/close_3-32.png' style='float:right;cursor:pointer;' onclick='flash.remove()'  /></div><div class='dial_info_cont'><a href='dialogues2.php?to="+params.user+"' ><strong><img src='images/users/mini/"+params.user+".jpg' alt='' style='float:left;' />"+params.user+": </strong>"+params.message+"</a></div></div>";
+					//document.getElementById('myAudio').play();
+					
+				},
+				remove: function() {
+					elem = document.getElementById('dial_info');
+					return elem.parentNode ? elem.parentNode.removeChild(elem) : elem;
 					}
-					//от меня прочитанное
-					else {
-							answer += '<div class="recip_mess" ><strong>'+ text[i]['author']
-							+'</strong>: ' + text[i]['message'] + '</div>';
-							
+			};
+			/*
+			 * Действия присылаемые с сервера
+			 */
+			var actions = {
+				
+				Connect: function(params) {
+					log.print('Sock: '+params.sock);
+					user.sock = params.sock;
+					user.conn = true;
+					user.Read();
+				},
+				
+				Print: function(params) {
+					if(params.user == user.sock && params.to == user.to) {
+						
+						log.print('<div class="left" ><strong>'+params.user + '</strong>: '+params.message+'</div>');
+					}
+					else if(params.to == user.sock && params.user == user.to) {
+						log.print('<div class="right" ><strong>'+params.user + '</strong>: '+params.message+'</div>');
+					}
+					else flash.show(params);
+				
+				},
+				
+				SystemPrint: function(params) {
+					log.print('<span style="background:#FF4500;" >'+params.user + " to "+ params.to + ": "+ params.message+ " <small> "+params.date+"</small></span>");
+				}
+				
+			};
+			
+			/*
+			 * Пользователь (клиент)
+			 */
+			var user = {
+				
+				sock: null,
+				
+				conn: false,
+				
+				busy: false,
+				
+				read: null,
+				
+				to: '',
+				
+				/*
+				 * Эта функция обрабатывает приходящие с сервера действия и выполняет их.
+				 */
+				onSuccess: function(data) {
+					signal('Запущена функция onSuccess() - обработка приходящих просов:'+data.actions[0]);
+					if (typeof data.actions == 'object') {
+						for (var i = 0; i < data.actions.length; i++) {
+							if (typeof actions[data.actions[i].action] == 'function') {
+								actions[data.actions[i].action](data.actions[i].params);
+							}
+						}
+					}
+				},
+				
+				/*
+				 * Эта функция выполняется по завершении ajax-запроса.
+				 */
+				onComplete: function(xhr) {
+					signal('Запущена функция onComplete() - завершение ajax запроса');
+					if (xhr.status == 404) {
+						actions.Disconnect();
+					}
+					user.busy = false;
+				},
+				
+				/*
+				 * Эта функция выполняется по завершении запроса-слушания.
+				 * При удачном завершении запроса (==200) моментальное возобновление прослушивания соккета.
+				 * При неудачном (!=200) возобновление через 5 секунд.
+				 */
+				onCompleteRead: function(xhr) {
+					signal('Запущена функция onCompleteRead() - завершение слушания');
+					
+					if (xhr.status == 200) {
+						user.Read();
+					} else {
+						setTimeout(user.Read, 5000);
+					}
+				},
+				
+				/*
+				 * Действие.
+				 * Соединение с сервером.
+				 */
+				Connect: function() {
+					signal('Запущена функция Connect() - присоединение к серверу');
+					if (user.conn == false && user.busy == false) {
+						user.busy = true;
+						user.sock = myUser;
+						user.to = myTo;
+						$.ajax({
+							data: 'action=Connect&user='+user.sock+'&to='+user.to,
+							success: user.onSuccess,
+							complete: user.onComplete
+						});
+						
+					}
+				},
+				
+				/*
+				 * Действие.
+				 * Отправка данных на сервер.
+				 */
+				Send: function() {
+					signal('Запущена функция Send() - отправка данных на сервер');
+					if (user.conn) {
+						var data = $.trim($('#input').val());
+						//var to = $.trim($('#to').val());
+						if (!data) {
+							return;
+						}
+						$.ajax({
+							data: 'action=Send&sock='+user.sock+'&data='+data+'&to='+user.to,
+							success: user.onSuccess,
+							complete: user.onComplete
+						});
+						$('#input').val('');
+					} else {
+						log.print('Please connect.');
+					}
+				},
+				
+				/*
+				 * Действие.
+				 * Прослушивание соккета.
+				 */
+				Read: function() {
+					signal('Запущена функция Read() - прослушивание сокета');
+					if (user.conn) {
+						user.read = $.ajax({
+							data: 'action=Read&sock='+user.sock,
+							success: user.onSuccess,
+							complete: user.onCompleteRead
+						});
 					}
 					
-					}
-				maxId = text[i]['id'];	
 				}
-				if((newLastId > lastId) && (lastId != 0)) {
-					numNew = numNew + 1;
-					document.getElementById('myAudio').play();
-					document.title = "+"+ numNew +" Диалоги";
-					lastId = newLastId;
-				}
-				else { 
-					lastId = newLastId;
-				}
-				//если пришли новые сообщения, подгружаем только их и прокручиваем вниз
-				if(answer != '') {
-					chatBox.innerHTML = chatBox.innerHTML + answer //в блок messages помещаем ответ
-					chatBox.scrollTop = 999990; //фигачим полосу прокрутки вниз. 
-				}
-			}
-			else alert('Ошибка Ajax: Данные не получены')
-		}
-		else alert('Ошибка Ajax: '+ this.statusText)
-	}
-}
-request.send(params)
-	}
-	
-	function clearNews() {
-		if (document.title != "Диалоги") {
-		document.title = "Диалоги";
-		numNew = 0;
-		}
-	}
+				
+			};
+			

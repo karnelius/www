@@ -1,0 +1,52 @@
+@charset "utf-8";
+/* dialogues */
+#log {
+	border: 1px solid #66CDAA;
+	height: 350px;
+	overflow: auto;
+	margin: 10px 0;
+	background: #66CDAA;
+	color: red;
+	border-radius: 4px;
+	
+}
+#signal {
+	height:200px;
+	margin:10px auto;
+	background:#CCC;
+	font-family:"Courier New", Courier, monospace;
+	font-size:12px;
+	overflow: auto;
+	border:2px solid #999;
+	border-radius: 5px;
+	padding: 3px;
+	color:#006;
+}
+#signal p {
+	font-size:14px;
+	margin-top: 0;
+	text-align:center;
+	font-weight: bold;
+}
+.left, .right {
+	
+	border-radius: 4px;
+	padding: 4px;
+	margin: 4px;
+}
+.left {
+	background: #7FFFD4;
+	margin-right: 25px;
+}
+.right {
+	background: #7FFFD4;
+	margin-left: 25px;
+}
+.dial_under {
+	text-align:center;
+}
+#btnSend {
+	
+	width: 100px;
+	height:50px;
+}

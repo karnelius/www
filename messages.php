@@ -69,7 +69,7 @@ if($loggedin)
   <option value='20' $sel20 >20</option>
   <option value='50' $sel50 >50</option>
 </select>
-сообщений</span></div><p><input type='checkbox' name='all'   /> | <a href='#' >Удалить выделенные</a> | <a href='#' >Пометить как прочитанные</a></p>"; //прикрепляем вернхнюю навигацию к листу сообщений
+сообщений</div><p><input type='checkbox' name='all'   /> | <a href='#' >Удалить выделенные</a> | <a href='#' >Пометить как прочитанные</a></p>"; //прикрепляем вернхнюю навигацию к листу сообщений
 		if ($rows > 0)
 		{
 			$row2 = mysql_num_rows($result);
@@ -89,7 +89,7 @@ if($loggedin)
             <p>$row[5]</p></div><!--.m_author -->
     <div class='m_mess'><a href='?read=$row[0]' ><strong>$row[4]</strong>
             <p>$row[3]...</p></a></div><!--.m_mess -->
-    <div class='m_delete'><a href='?delete=$row[0]' ><img src='images/del_mess.png' alt='' /></a></div>
+    <div class='m_delete'><a href='?delete=$row[0]' ><img src='/images/recycle_full-16.png' alt='' /></a></div>
  </div><!--.message -->"; //Это паттерн вывода сообщений. 
 			}
 			$messages_box = $messages_box. pageNavigator($page, $total, $page_string); //прикрепляем нижнюю навигация к листу сообщений	
@@ -230,7 +230,7 @@ if($form) $messages_form = "<div class='messages_form' >$alert<form action='' me
 
 if($read) $read_form = "<div class='messages_form' >$alert
 <form action='' method='post' class='create_message' >
-		<div class='read_mess_ansver_head'>$sender_photo <a href='index.php?view=$sender'><strong>$sender</strong></a><input type='hidden' name='friend'  value='$sender'  /> <p style='float:right'><a href='?delete=$id_mess' ><img src='images/messdel.png' alt='' /> Удалить сообщение</a><br /><a href='dialogues.php?to=$sender' ><img src='images/dial2.png' alt='' /> Перейти в Диалоги</a></p> <p>$date</p><br style='float:none' /></div><div class='read_mess_ansver' >$full_message</div>
+		<div class='read_mess_ansver_head'>$sender_photo <a href='index.php?view=$sender'><strong>$sender</strong></a><input type='hidden' name='friend'  value='$sender'  /> <p style='float:right'><a href='?delete=$id_mess' ><img src='/images/recycle_full-16.png' alt='Удалить сообщение' /></a><br /><a href='dialogues.php?to=$sender' ><img src='images/dialog-20.png' alt='Перейти в диалоги' /> </a></p> <p>$date</p><br style='float:none' /></div><div class='read_mess_ansver' >$full_message</div>
 		<table>
 	<tr>
 		<td>
@@ -258,7 +258,7 @@ if($read) $read_form = "<div class='messages_form' >$alert
 </form>
 
 </div><!--.messages_form-->";
-if ($read2) $read_form = "<div class='read_mess_ansver_head'>$recipient_photo <a href='index.php?view=$recipient'><strong>$recipient</strong></a> <a href='?delete=$id_mess' style='float:right'>[Удалить сообщение]</a> <p>$date</p><br style='float:none' /></div><div class='read_mess_ansver' >$full_message</div>";
+if ($read2) $read_form = "<div class='read_mess_ansver_head'>$recipient_photo <a href='index.php?view=$recipient'><strong>$recipient</strong></a> <a href='?delete=$id_mess' style='float:right'><img src='/images/recycle_full-16.png' alt='Удалить сообщение' /></a> <p>$date</p><br style='float:none' /></div><div class='read_mess_ansver' >$full_message</div>";
 
 //Есть ли новые сообщения? 
  $is_new_mess = isMessages ($user);

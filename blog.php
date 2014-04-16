@@ -247,7 +247,7 @@ else
   <option value='20' $sel20 >20</option>
   <option value='50' $sel50 >50</option>
 </select>
-сообщений</span></div></form>";
+статей</div></form>";
 			for ($i = 0; $i < $num; ++$i)
 			{
 				$row = mysql_fetch_row($result);

@@ -17,22 +17,8 @@ function signal(string) {
 				/*
 				 * Настройка AJAX
 				 */
-				 //if(myUser) {
 				$.ajaxSetup({url: 'server.php', type: 'post', dataType: 'json'});
 				//подключаемся к серверу сразу
-				 //}
-				
-				/*
-				 * События кнопок и поля ввода
-				 */
-				 
-				$('#btnSend').click(user.Send);
-				$('#input')
-					.keydown(function(e){ if (e.keyCode == 13) { user.Send(); return false; } })
-					.keypress(function(e){ if (e.keyCode == 13) { return false; } })
-					.keyup(function(e){ if (e.keyCode == 13) { return false; } })
-				;
-				 
 				 user.Connect();
 			});
 			
@@ -55,17 +41,26 @@ function signal(string) {
 			 * Печать/удаление окошка с ообщением снизу. 
 			*/
 			var flash = {
+				def: 'images/users/mini/default.jpg',
+				
+				//Действия
 				show: function(params) {
 					if(document.getElementById('dial_info')) 
-					 flash.remove();
-					document.body.innerHTML +="<div id='dial_info' ><div class='dial_info_head' ><img src='images/icon.png' style='float:left;' id='dial_ico' /><strong>Message</strong><img src='images/close_3-32.png' style='float:right;cursor:pointer;' onclick='flash.remove()'  /></div><div class='dial_info_cont'><a href='dialogues.php?to="+params.user+"' ><strong><img src='images/users/mini/"+params.user+".jpg' alt='' style='float:left;' />"+params.user+": </strong>"+params.message+"</a></div></div>";
+					 	flash.remove();
+					document.body.innerHTML +="<div id='dial_info' ><div class='dial_info_head' ><img src='images/icon.png' style='float:left;' id='dial_ico' /><strong>Message</strong><img src='images/close_3-32.png' style='float:right;cursor:pointer;' onclick='flash.remove()'  /></div><div class='dial_info_cont'><a href='dialogues.php?to="+params.user+"' ><strong><img src='images/users/mini/"+params.user+".jpg' alt='' style='float:left;' onerror='this.src = flash.def' />"+params.user+": </strong>"+params.message+"</a></div></div>";
 					//document.getElementById('myAudio').play();
 					
 				},
+				
 				remove: function() {
 					elem = document.getElementById('dial_info');
 					return elem.parentNode ? elem.parentNode.removeChild(elem) : elem;
-					}
+					},
+				play: function() {
+					var audio = document.getElementById('myAudio');
+					if (user.signal) 
+						audio.play();
+				}
 			};
 			/*
 			 * Действия присылаемые с сервера
@@ -78,16 +73,33 @@ function signal(string) {
 					user.conn = true;
 					user.Read();
 				},
-				
+				Mark: function (params) {
+					document.getElementById(params.id).className = "left_read";
+					//меняем внешний вид по ID сообщения. работаем через класс
+				},
 				Print: function(params) {
+					//signal('Запущена функция Print() - печать сообщения:');
 					if(params.user.toUpperCase() == user.sock.toUpperCase() && params.to.toUpperCase() == user.to.toUpperCase()) {
-						
-						log.print('<div class="left" ><strong>'+params.user + '</strong>: '+params.message+'</div>');
+						//я отправил
+						if(params.read == 0)
+							log.print('<div class="left_unread" id="'+params.id+'" ><strong>'+params.user + '</strong>: '+params.message+'</div>');
+						else
+							log.print('<div class="left_read" id="'+params.id+'" ><strong>'+params.user + '</strong>: '+params.message+'</div>');
 					}
-					else if(params.to.toUpperCase() == user.sock.toUpperCase() && params.user.toUpperCase() == user.to.toUpperCase()) {
-						log.print('<div class="right" ><strong>'+params.user + '</strong>: '+params.message+'</div>');
+					
+					
+					else if(params.to.toUpperCase() == user.sock.toUpperCase() && params.user.toUpperCase() == user.to.toUpperCase()) { 
+						//я получил
+						if(params.signal) {
+							user.lastId = params.id;
+						}
+						log.print('<div class="right" id="'+params.id+'" ><strong>'+params.user + '</strong>: '+params.message+'</div>');
+						flash.play();
 					}
-					else flash.show(params);
+					else { 
+						flash.show(params);
+						flash.play();
+					}
 				
 				},
 				
@@ -101,15 +113,12 @@ function signal(string) {
 			 * Пользователь (клиент)
 			 */
 			var user = {
-				
 				sock: null,
-				
 				conn: false,
-				
 				busy: false,
-				
 				read: null,
-				
+				signal: false,
+				lastId: '',
 				to: '',
 				
 				/*
@@ -121,8 +130,10 @@ function signal(string) {
 						for (var i = 0; i < data.actions.length; i++) {
 							if (typeof actions[data.actions[i].action] == 'function') {
 								actions[data.actions[i].action](data.actions[i].params);
+								
 							}
 						}
+						user.signal = true; //после первой загрузки при коннекте включаем звук
 					}
 				},
 				
@@ -163,7 +174,7 @@ function signal(string) {
 						user.sock = myUser;
 						user.to = myTo;
 						$.ajax({
-							data: 'action=Connect&user='+user.sock+'&to='+user.to,
+							data: 'action=Connect&user='+user.sock+'&to='+user.to+'&lastid='+user.lastid,
 							success: user.onSuccess,
 							complete: user.onComplete
 						});
@@ -179,10 +190,10 @@ function signal(string) {
 					signal('Запущена функция Send() - отправка данных на сервер');
 					if (user.conn) {
 						var data = $.trim($('#input').val());
-						//var to = $.trim($('#to').val());
 						if (!data) {
 							return;
 						}
+						
 						$.ajax({
 							data: 'action=Send&sock='+user.sock+'&data='+data+'&to='+user.to,
 							success: user.onSuccess,
@@ -201,8 +212,9 @@ function signal(string) {
 				Read: function() {
 					signal('Запущена функция Read() - прослушивание сокета');
 					if (user.conn) {
+						//есил были изменения id, добавляем в data переменную lastId
 						user.read = $.ajax({
-							data: 'action=Read&sock='+user.sock,
+							data: 'action=Read&sock='+user.sock+'&lastId='+user.lastId+'&to='+user.to,
 							success: user.onSuccess,
 							complete: user.onCompleteRead
 						});

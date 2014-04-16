@@ -10,9 +10,10 @@ $dial_friend_link = "<a href='dialogues.php' id='link_friends' >Список д�
 
 $dial_area = '<div id="log"></div>
 		<div class="dial_under" >
-		<input id="input" size="50" type="text" /> 
-		<br />
-		<input id="btnSend"  type="button" value="Send" />
+		<form action="javascript: user.Send();" />
+		<input id="input" size="50"  type="text" />
+		<input id="btnSend"  type="button" value="Отправить" onclick="user.Send()" />
+		</form>
 		</div>
 		<br />
 		<div id="signal" ><p>Консоль</p></div>';

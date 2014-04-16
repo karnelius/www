@@ -40,8 +40,8 @@ class Server {
 	 * Эта функция пишет действие в соккеты. Пишет адресату $to
 	 */
 	static function AddToSock($action, $params = '', $to) {
-		if(file_exists('sockets/'.$to)) {
-			$f = fopen('sockets/'.$to, 'a+b') or die('socket not found');
+		if(file_exists('sockets/'.strtolower($to))) {
+			$f = fopen('sockets/'.strtolower($to), 'a+b') or die('socket not found');
 			flock($f, LOCK_EX);
 			fwrite($f, '{action: "'.$action.'", params: {'.$params.'}}'."\r\n");
 			self::Log('ADDSOCK{action: "'.$action.'", params: {'.$params.'}}'."\r\n");
@@ -75,7 +75,7 @@ class Server {
 		$sock = $_POST['user'];
 		$to = $_POST['to'];
 		if($sock != '')
-			fclose(fopen('sockets/'.$sock, 'a+b'));
+			fclose(fopen('sockets/'.strtolower($sock), 'a+b'));
 		//идем в базу за сообщениями
 		if ($to != "") {
 			require_once 'elements/base.php';
@@ -84,7 +84,12 @@ class Server {
 				$rows = mysql_num_rows($result);
 				for ($i = 0; $i < $rows; ++$i) {
 					$row = mysql_fetch_row($result);
-					self::AddToSend('Print', 'user: "'.$row[1].'", message: "'.$row[3].'", to: "'.$row[2].'", date: "'.$row[5].'"');
+					//если я получатель AND если статус сообщени 0, то делаем апргрейд сообщения по ID
+					if($row[2] == $sock && $row[7] == 0) {
+						 mysql_query("UPDATE `messages` SET `read`=1 WHERE `id`=$row[0]");
+						 //добавляем задачу отправившиму в файл, если он полключен. метод Mark
+					}
+					self::AddToSend('Print', 'user: "'.$row[1].'", id: "'.$row[0].'", message: "'.$row[3].'", to: "'.$row[2].'", date: "'.$row[5].'", read: "'.$row[7].'"');
 				}
 			}
 		}
@@ -107,10 +112,12 @@ class Server {
 		//добавляем в базу и в сокет получателю
 		if (strlen($data) && isset($to)) {
 			require_once 'elements/base.php';
-			$result = mysql_query("INSERT INTO `messages` VALUES (NULL, '$sock', '$to', '$data', '', '$date', 0, 0)");
-			self::AddToSock('Print', 'user: "'.$sock.'", message: "'.$data.'", to: "'.$to.'", date: "'.$date.'"', $to);
-			self::AddToSend('Print', 'user: "'.$sock.'", message: "'.$data.'", to: "'.$to.'", date: "'.$date.'"');
-			self::Log('Print(log) '. 'user: "'.$sock.'", message: "'.$data.'", to: "'.$to.'", date: "'.$date.'"', $sock);
+			$result = mysql_query("INSERT INTO `messages` VALUES (NULL, '$sock', '$to', '$data', '', '$date', 0, 0);");
+			$result = mysql_query("SELECT LAST_INSERT_ID();");
+			@$id = mysql_fetch_row($result);
+			self::AddToSock('Print', 'user: "'.$sock.'", id: "'.$id[0].'", message: "'.$data.'", to: "'.$to.'", date: "'.$date.'", read: "0"', $to);
+			self::AddToSend('Print', 'user: "'.$sock.'", id: "'.$id[0].'", message: "'.$data.'", to: "'.$to.'", date: "'.$date.'", read: "0"');
+			self::Log('Print(log+) user: "'.$sock.'", id: "'.$id[0].'", message: "'.$data.'", to: "'.$to.'", date: "'.$date.'", read: "0"', $sock);
 		}
 	}
 	
@@ -120,11 +127,18 @@ class Server {
 	 */
 	static function actionRead() {
 		$sock = $_POST['sock'];
-		//self::Log('Start: ActionRead() with \'sock\': '.$sock);
+		$last_id = $_POST['lastId'];
+		$to = $_POST['to'];
+		if(($last_id != '') && ($to != '')){
+			require_once 'elements/base.php';
+			@mysql_query("UPDATE `messages` SET `read`=1 WHERE `id`=$last_id");
+			self::AddToSock('Mark', 'id: "'.$last_id.'"', $to);
+		}
+			
 		$time = time();
-		if(file_exists('sockets/'.$sock)){
+		if(file_exists('sockets/'.strtolower($sock))){
 			while ((time() - $time) < 30) {
-				if ($data = file_get_contents('sockets/'.$sock)) {
+				if ($data = file_get_contents('sockets/'.strtolower($sock))) {
 					$f = fopen('sockets/'.$sock, 'r+b') or die('socket not found');
 					flock($f, LOCK_EX);
 					ftruncate($f, 0);
@@ -133,6 +147,8 @@ class Server {
 					$data = trim($data, "\r\n");
 					foreach (explode("\r\n", $data) as $action) {
 						self::$actions[] = $action;
+						//$read = explode('"', $action);
+						//self::AddToSock('Mark', 'id: "'.$read[5].'"', $read[3]);
 					}
 					self::Send();
 				}

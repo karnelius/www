@@ -40,11 +40,11 @@ class Server {
 	 * Эта функция пишет действие в соккеты. Пишет адресату $to
 	 */
 	static function AddToSock($action, $params = '', $to) {
-		if(file_exists('sockets/'.strtolower($to))) {
-			$f = fopen('sockets/'.strtolower($to), 'a+b') or die('socket not found');
+		$to = strtolower($to);
+		if(file_exists('sockets/'.$to)) {
+			$f = fopen('sockets/'.$to, 'a+b') or die('socket not found');
 			flock($f, LOCK_EX);
 			fwrite($f, '{action: "'.$action.'", params: {'.$params.'}}'."\r\n");
-			self::Log('ADDSOCK{action: "'.$action.'", params: {'.$params.'}}'."\r\n");
 			fclose($f);
 		}
 	}
@@ -87,6 +87,7 @@ class Server {
 					//если я получатель AND если статус сообщени 0, то делаем апргрейд сообщения по ID
 					if($row[2] == $sock && $row[7] == 0) {
 						 mysql_query("UPDATE `messages` SET `read`=1 WHERE `id`=$row[0]");
+						 //self::AddToSock("Mark", "id: '$row[0]'", $to);
 						 //добавляем задачу отправившиму в файл, если он полключен. метод Mark
 					}
 					self::AddToSend('Print', 'user: "'.$row[1].'", id: "'.$row[0].'", message: "'.$row[3].'", to: "'.$row[2].'", date: "'.$row[5].'", read: "'.$row[7].'"');
@@ -126,15 +127,8 @@ class Server {
 	 * Слушает соккет до момента когда в нем появятся данные или же до истечения таймаута.
 	 */
 	static function actionRead() {
-		$sock = $_POST['sock'];
-		$last_id = $_POST['lastId'];
+		$sock = $_POST['sock'];	
 		$to = $_POST['to'];
-		/*if(($last_id != '') && ($to != '')){
-			require_once 'elements/base.php';
-			@mysql_query("UPDATE `messages` SET `read`=1 WHERE `id`=$last_id");
-			self::AddToSock('Mark', 'id: "'.$last_id.'"', $to);
-		}
-			*/
 		$time = time();
 		if(file_exists('sockets/'.strtolower($sock))){
 			while ((time() - $time) < 30) {
@@ -145,10 +139,16 @@ class Server {
 					fwrite($f, '');
 					fclose($f);
 					$data = trim($data, "\r\n");
+					require_once 'elements/base.php';
+					
 					foreach (explode("\r\n", $data) as $action) {
 						self::$actions[] = $action;
-						//$read = explode('"', $action);
-						//self::AddToSock('Mark', 'id: "'.$read[5].'"', $read[3]);
+						preg_match("/id: \"(\d+)\"/", $action, $id );
+						preg_match("/user: \"(\w+)\"/", $action, $human );
+						if($id[1] != '' && $human[1] != '') {
+							@mysql_query("UPDATE `messages` SET `read`=1 WHERE `id`=$id[1]");
+							self::AddToSock("Mark", "id: '$id[1]'", $human[1]);
+						}
 					}
 					self::Send();
 				}

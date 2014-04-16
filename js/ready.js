@@ -30,7 +30,7 @@ function signal(string) {
 				
 				print: function(s) {
 					if(document.getElementById('log')) {
-					$('#log').append('<div>'+s+'</div>').get(0).scrollTop += 100;
+					$('#log').append('<div>'+s+'</div>').get(0).scrollTop += 1000000;
 					}
 					//else alert(s);
 				}
@@ -49,7 +49,9 @@ function signal(string) {
 					 	flash.remove();
 					document.body.innerHTML +="<div id='dial_info' ><div class='dial_info_head' ><img src='images/icon.png' style='float:left;' id='dial_ico' /><strong>Message</strong><img src='images/close_3-32.png' style='float:right;cursor:pointer;' onclick='flash.remove()'  /></div><div class='dial_info_cont'><a href='dialogues.php?to="+params.user+"' ><strong><img src='images/users/mini/"+params.user+".jpg' alt='' style='float:left;' onerror='this.src = flash.def' />"+params.user+": </strong>"+params.message+"</a></div></div>";
 					//document.getElementById('myAudio').play();
-					
+					if(document.getElementById('log')) {
+						document.getElementById('log').scrollTop += 1000000;
+					}
 				},
 				
 				remove: function() {
@@ -58,8 +60,19 @@ function signal(string) {
 					},
 				play: function() {
 					var audio = document.getElementById('myAudio');
-					if (user.signal) 
-						audio.play();
+					try {
+						
+						if (audio.canPlayType("audio/mpeg") || audio.canPlayType("audio/ogg")) {
+							
+							audio.play();
+						}
+					} catch(e) {
+						
+						  return true;
+						
+					}
+
+					
 				}
 			};
 			/*
@@ -74,7 +87,8 @@ function signal(string) {
 					user.Read();
 				},
 				Mark: function (params) {
-					document.getElementById(params.id).className = "left_read";
+					if(document.getElementById(params.id))
+						document.getElementById(params.id).className = "left_read";
 					//меняем внешний вид по ID сообщения. работаем через класс
 				},
 				Print: function(params) {
@@ -90,9 +104,6 @@ function signal(string) {
 					
 					else if(params.to.toUpperCase() == user.sock.toUpperCase() && params.user.toUpperCase() == user.to.toUpperCase()) { 
 						//я получил
-						//if(params.signal) {
-							//user.lastId = params.id;
-						//}
 						log.print('<div class="right" id="'+params.id+'" ><strong>'+params.user + '</strong>: '+params.message+'</div>');
 						flash.play();
 					}
@@ -118,19 +129,19 @@ function signal(string) {
 				busy: false,
 				read: null,
 				signal: false,
-				lastId: '',
 				to: '',
 				
 				/*
 				 * Эта функция обрабатывает приходящие с сервера действия и выполняет их.
 				 */
 				onSuccess: function(data) {
-					signal('Запущена функция onSuccess() - обработка приходящих просов:'+data.actions[0]);
+					signal('Запущена функция onSuccess() - обработка приходящих запросов:'+data.actions[0]);
 					if (typeof data.actions == 'object') {
 						for (var i = 0; i < data.actions.length; i++) {
 							if (typeof actions[data.actions[i].action] == 'function') {
+								//signal('1-Обработка в этом месте onSuccess():'+data.actions[i].action+' ' +data.actions[i].params.id);
 								actions[data.actions[i].action](data.actions[i].params);
-								
+								//signal('2-Обработка в этом месте onSuccess():'+data.actions[i].action);
 							}
 						}
 						user.signal = true; //после первой загрузки при коннекте включаем звук

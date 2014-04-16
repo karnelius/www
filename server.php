@@ -129,12 +129,12 @@ class Server {
 		$sock = $_POST['sock'];
 		$last_id = $_POST['lastId'];
 		$to = $_POST['to'];
-		if(($last_id != '') && ($to != '')){
+		/*if(($last_id != '') && ($to != '')){
 			require_once 'elements/base.php';
 			@mysql_query("UPDATE `messages` SET `read`=1 WHERE `id`=$last_id");
 			self::AddToSock('Mark', 'id: "'.$last_id.'"', $to);
 		}
-			
+			*/
 		$time = time();
 		if(file_exists('sockets/'.strtolower($sock))){
 			while ((time() - $time) < 30) {

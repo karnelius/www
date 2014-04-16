@@ -90,9 +90,9 @@ function signal(string) {
 					
 					else if(params.to.toUpperCase() == user.sock.toUpperCase() && params.user.toUpperCase() == user.to.toUpperCase()) { 
 						//я получил
-						if(params.signal) {
-							user.lastId = params.id;
-						}
+						//if(params.signal) {
+							//user.lastId = params.id;
+						//}
 						log.print('<div class="right" id="'+params.id+'" ><strong>'+params.user + '</strong>: '+params.message+'</div>');
 						flash.play();
 					}
@@ -214,7 +214,7 @@ function signal(string) {
 					if (user.conn) {
 						//есил были изменения id, добавляем в data переменную lastId
 						user.read = $.ajax({
-							data: 'action=Read&sock='+user.sock+'&lastId='+user.lastId+'&to='+user.to,
+							data: 'action=Read&sock='+user.sock+'&to='+user.to,
 							success: user.onSuccess,
 							complete: user.onCompleteRead
 						});

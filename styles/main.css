@@ -276,16 +276,49 @@ content: '';
 	border-radius: 5px;
 
 }
+
 .input_dialog #search_field {
 	width: 120px;
 }
-.dial_friend_p:hover {
-	background: url(../images/background4.jpg);
+.dial_friend_p {
+	height: 40px;
+	margin: 3px;
+	
+
+}
+.dial_friend_p .dial_friend_img {
+	display:table-cell;
+	width: 40px;
+	height: 40px;
+	float:left;
+	background:#066;
+	text-align:center;
+	vertical-align:middle;
+	line-height: 40px;
+	cursor:pointer;
+	
+}
+.dial_friend_p .dial_friend_text {
+	display:block;
+	height: 38px;
+	width:452px;
+	float:right;
+	border: 1px solid #066;
+	cursor:pointer;
+	text-decoration:none !important;
 }
 
-.your_friends > p{
-	margin:0;
+.dial_friend_text:hover {
+	background: #066;
+	
 }
+#link_friends {
+	display:block;
+	width: 150px;
+	text-align:center;
+	border: 1px solid #066;
+}
+
 .mail_to {
 	float:left;
 }
@@ -610,7 +643,7 @@ color:#fff;
 }
 
 .online_text {
-	color: yellow;
+	color: yellow !important; 
 }
 
 /*Начало правой колонки страницы*/
@@ -747,4 +780,5 @@ AUDIO {
 }
 .dial_info_cont img {
 	margin: 5px;
+	border: 2px solid #066;
 }

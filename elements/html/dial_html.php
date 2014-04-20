@@ -27,4 +27,5 @@ $dial_friends = "<div class='input_dialog' $styleAuto ><h3>Все пользов
 	<div class='no_float'></div><div id='info'></div>";
 
 $dial_style = "<link type='text/css' rel='stylesheet' href='styles/dialogues.css' />";
+
 ?>

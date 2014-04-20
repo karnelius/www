@@ -12,8 +12,9 @@ if($loggedin)
 		foreach($sum['friends'] as $friend)
 		{
 			$stat = online($friend);
-			if ($stat == 'offline') $my_friendsof = $my_friendsof. "<p class='dial_friend_p' ><a href='?to=$friend'>$friend </a>$stat</p>";
-			else $my_friendson = $my_friendson. "<p dial_friend_p ><a href='?to=$friend'>$friend </a>$stat</p>";
+			if ($stat == 'offline') $my_friendsof = $my_friendsof. "<div class='dial_friend_p' ><div class='dial_friend_img' ><a href='?to=$friend'><img src='images/users/mini/$friend.jpg' alt='$friend' onerror='this.src = flash.def' /></a></div> <a class='dial_friend_text' href='?to=$friend'>$friend $stat</a> </div>";
+			
+			else $my_friendson = $my_friendson. "<div class='dial_friend_p' ><div class='dial_friend_img' ><a href='?to=$friend'><img src='images/users/mini/$friend.jpg' alt='$friend' onerror='this.src = flash.def' /></a></div> <a class='dial_friend_text' href='?to=$friend'>$friend $stat</a> </div>";
 		}
 	}
 	

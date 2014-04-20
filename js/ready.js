@@ -45,7 +45,6 @@ function signal(string) {
 				
 				//Действия
 				show: function(params) {
-					if(document.getElementById('dial_info')) 
 					 	flash.remove();
 					document.body.innerHTML +="<div id='dial_info' ><div class='dial_info_head' ><img src='images/icon.png' style='float:left;' id='dial_ico' /><strong>Message</strong><img src='images/close_3-32.png' style='float:right;cursor:pointer;' onclick='flash.remove()'  /></div><div class='dial_info_cont'><a href='dialogues.php?to="+params.user+"' ><strong><img src='images/users/mini/"+params.user+".jpg' alt='' style='float:left;' onerror='this.src = flash.def' />"+params.user+": </strong>"+params.message+"</a></div></div>";
 					//document.getElementById('myAudio').play();
@@ -55,18 +54,24 @@ function signal(string) {
 				},
 				
 				remove: function() {
-					elem = document.getElementById('dial_info');
-					return elem.parentNode ? elem.parentNode.removeChild(elem) : elem;
+						try {
+							elem = document.getElementById('dial_info');
+							return elem.parentNode ? elem.parentNode.removeChild(elem) : elem;
+						}
+						catch(e) {
+							return true;
+						}
 					},
 				play: function() {
 					var audio = document.getElementById('myAudio');
 					try {
 						
-						if (audio.canPlayType("audio/mpeg") || audio.canPlayType("audio/ogg")) {
+						if ((audio.canPlayType("audio/mpeg") || audio.canPlayType("audio/ogg")) && user.signal) {
 							
 							audio.play();
 						}
-					} catch(e) {
+					} 
+					catch(e) {
 						
 						  return true;
 						
@@ -87,18 +92,23 @@ function signal(string) {
 					user.Read();
 				},
 				Mark: function (params) {
-					if(document.getElementById(params.id))
-						document.getElementById(params.id).className = "left_read";
+					try {
+							document.getElementById(params.id).className = "left_read";
+					}
+					catch(e) {
+						user.mark = params.id;
+						alert("Опережение! "+e);
+					}
 					//меняем внешний вид по ID сообщения. работаем через класс
 				},
 				Print: function(params) {
 					//signal('Запущена функция Print() - печать сообщения:');
 					if(params.user.toUpperCase() == user.sock.toUpperCase() && params.to.toUpperCase() == user.to.toUpperCase()) {
 						//я отправил
-						if(params.read == 0)
-							log.print('<div class="left_unread" id="'+params.id+'" ><strong>'+params.user + '</strong>: '+params.message+'</div>');
-						else
+						if(params.read == 1 || params.id == user.mark)
 							log.print('<div class="left_read" id="'+params.id+'" ><strong>'+params.user + '</strong>: '+params.message+'</div>');
+						else
+							log.print('<div class="left_unread" id="'+params.id+'" ><strong>'+params.user + '</strong>: '+params.message+'</div>');
 					}
 					
 					
@@ -129,6 +139,7 @@ function signal(string) {
 				busy: false,
 				read: null,
 				signal: false,
+				mark: 0,
 				to: '',
 				
 				/*

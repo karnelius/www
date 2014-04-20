@@ -1,5 +1,6 @@
 // JavaScript Document
 
+
 function redactVis ()
 {
 	if (document.getElementById('redact').style.display == 'none')

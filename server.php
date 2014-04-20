@@ -41,7 +41,7 @@ class Server {
 	 */
 	static function AddToSock($action, $params = '', $to) {
 		$to = strtolower($to);
-		if(file_exists('sockets/'.$to)) {
+		if(($to != '') && (file_exists('sockets/'.$to))) {
 			$f = fopen('sockets/'.$to, 'a+b') or die('socket not found');
 			flock($f, LOCK_EX);
 			fwrite($f, '{action: "'.$action.'", params: {'.$params.'}}'."\r\n");
@@ -87,7 +87,7 @@ class Server {
 					//если я получатель AND если статус сообщени 0, то делаем апргрейд сообщения по ID
 					if($row[2] == $sock && $row[7] == 0) {
 						 mysql_query("UPDATE `messages` SET `read`=1 WHERE `id`=$row[0]");
-						 //self::AddToSock("Mark", "id: '$row[0]'", $to);
+						 self::AddToSock("Mark", "id: '$row[0]'", $to);
 						 //добавляем задачу отправившиму в файл, если он полключен. метод Mark
 					}
 					self::AddToSend('Print', 'user: "'.$row[1].'", id: "'.$row[0].'", message: "'.$row[3].'", to: "'.$row[2].'", date: "'.$row[5].'", read: "'.$row[7].'"');
@@ -96,7 +96,6 @@ class Server {
 		}
 			self::AddToSock('SystemPrint', 'message: "Client connected.", date: "12.04.2014"', $sock);
 			self::AddToSend('Connect', 'sock: "'.$sock.'", date: "12.04.2014"');
-			self::Log("Connect client: $sock -//- actionConnect()"); 
 		
 		
 	}
@@ -116,9 +115,9 @@ class Server {
 			$result = mysql_query("INSERT INTO `messages` VALUES (NULL, '$sock', '$to', '$data', '', '$date', 0, 0);");
 			$result = mysql_query("SELECT LAST_INSERT_ID();");
 			@$id = mysql_fetch_row($result);
-			self::AddToSock('Print', 'user: "'.$sock.'", id: "'.$id[0].'", message: "'.$data.'", to: "'.$to.'", date: "'.$date.'", read: "0"', $to);
 			self::AddToSend('Print', 'user: "'.$sock.'", id: "'.$id[0].'", message: "'.$data.'", to: "'.$to.'", date: "'.$date.'", read: "0"');
-			self::Log('Print(log+) user: "'.$sock.'", id: "'.$id[0].'", message: "'.$data.'", to: "'.$to.'", date: "'.$date.'", read: "0"', $sock);
+			self::AddToSock('Print', 'user: "'.$sock.'", id: "'.$id[0].'", message: "'.$data.'", to: "'.$to.'", date: "'.$date.'", read: "0"', $to);
+			//self::Log('Print(log+) user: "'.$sock.'", id: "'.$id[0].'", message: "'.$data.'", to: "'.$to.'", date: "'.$date.'", read: "0"', $sock);
 		}
 	}
 	

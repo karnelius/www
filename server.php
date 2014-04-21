@@ -5,13 +5,13 @@
 class Server {
 	/*
 	 * Пишу свою историю событий в файл ready.log
-	*/
+	
 	static function Log($message) {
 		$f = fopen("ready.log", "a+");
 		$date = date('Y.m.d  H:i:s');
 		fwrite($f, $date." -//- ".$message."\r\n");
 		fclose($f);
-	}
+	}*/
 	/*
 	 * Стек действий для отправки клиенту в текущем запросе.
 	 */
@@ -94,7 +94,7 @@ class Server {
 				}
 			}
 		}
-			self::AddToSock('SystemPrint', 'message: "Client connected.", date: "12.04.2014"', $sock);
+			//self::AddToSock('SystemPrint', 'message: "Client connected.", date: "12.04.2014"', $sock);
 			self::AddToSend('Connect', 'sock: "'.$sock.'", date: "12.04.2014"');
 		
 		
@@ -129,7 +129,7 @@ class Server {
 		$sock = $_POST['sock'];	
 		$to = $_POST['to'];
 		$time = time();
-		if(file_exists('sockets/'.strtolower($sock))){
+		if(($sock != '') && file_exists('sockets/'.strtolower($sock))){
 			while ((time() - $time) < 30) {
 				if ($data = file_get_contents('sockets/'.strtolower($sock))) {
 					$f = fopen('sockets/'.$sock, 'r+b') or die('socket not found');

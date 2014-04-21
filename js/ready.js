@@ -86,7 +86,7 @@ function signal(string) {
 			var actions = {
 				
 				Connect: function(params) {
-					log.print('Sock: '+params.sock);
+					//log.print('Sock: '+params.sock);
 					user.sock = params.sock;
 					user.conn = true;
 					user.Read();

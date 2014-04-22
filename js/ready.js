@@ -1,4 +1,5 @@
 //эта функция будет удалена
+
 function signal(string) {
 				var dat = new Date();
 				date = dat.getHours() + ':' + dat.getMinutes() + ':' + dat.getSeconds();
@@ -9,7 +10,7 @@ function signal(string) {
 			}
 			
 
-/*************************************************/			
+/************************************************/			
 			$(document).ready(function() {
 				
 			myUser = document.getElementById('user') ? document.getElementById('user').innerHTML : false;
@@ -86,7 +87,7 @@ function signal(string) {
 			var actions = {
 				
 				Connect: function(params) {
-					//log.print('Sock: '+params.sock);
+					log.print('Sock: '+params.sock);
 					user.sock = params.sock;
 					user.conn = true;
 					user.Read();
@@ -97,12 +98,11 @@ function signal(string) {
 					}
 					catch(e) {
 						user.mark = params.id;
-						alert("Опережение! "+e);
 					}
 					//меняем внешний вид по ID сообщения. работаем через класс
 				},
 				Print: function(params) {
-					//signal('Запущена функция Print() - печать сообщения:');
+					signal('Запущена функция Print() - печать сообщения:');
 					if(params.user.toUpperCase() == user.sock.toUpperCase() && params.to.toUpperCase() == user.to.toUpperCase()) {
 						//я отправил
 						if(params.read == 1 || params.id == user.mark)
@@ -148,9 +148,12 @@ function signal(string) {
 				onSuccess: function(data) {
 					signal('Запущена функция onSuccess() - обработка приходящих запросов:'+data.actions[0]);
 					if (typeof data.actions == 'object') {
+						if(!user.signal) {
+							data.actions.reverse();
+						}
 						for (var i = 0; i < data.actions.length; i++) {
 							if (typeof actions[data.actions[i].action] == 'function') {
-								//signal('1-Обработка в этом месте onSuccess():'+data.actions[i].action+' ' +data.actions[i].params.id);
+								signal('1-Обработка в этом месте onSuccess():'+data.actions[i].action+' ' +data.actions[i].params.id);
 								actions[data.actions[i].action](data.actions[i].params);
 								//signal('2-Обработка в этом месте onSuccess():'+data.actions[i].action);
 							}
@@ -163,7 +166,7 @@ function signal(string) {
 				 * Эта функция выполняется по завершении ajax-запроса.
 				 */
 				onComplete: function(xhr) {
-					signal('Запущена функция onComplete() - завершение ajax запроса');
+					signal('Запущена функция onComplete() - завершение ajax запроса. Статус: '+xhr.status);
 					if (xhr.status == 404) {
 						actions.Disconnect();
 					}
@@ -196,7 +199,7 @@ function signal(string) {
 						user.sock = myUser;
 						user.to = myTo;
 						$.ajax({
-							data: 'action=Connect&user='+user.sock+'&to='+user.to+'&lastid='+user.lastid,
+							data: 'action=Connect&user='+user.sock+'&to='+user.to,
 							success: user.onSuccess,
 							complete: user.onComplete
 						});

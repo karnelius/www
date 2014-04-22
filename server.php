@@ -79,7 +79,7 @@ class Server {
 		//идем в базу за сообщениями
 		if ($to != "") {
 			require_once 'elements/base.php';
-			@$result = mysql_query("SELECT * FROM `messages` WHERE `sender`='$sock' AND `recipient`='$to' OR `sender`='$to' AND `recipient`='$sock' ORDER BY `id`");
+			@$result = mysql_query("SELECT * FROM `messages` WHERE `sender` LIKE '%$sock%' AND `recipient`='$to' OR `sender`='$to' AND `recipient`='$sock' ORDER BY `id` DESC LIMIT 40");
 			if($result) {
 				$rows = mysql_num_rows($result);
 				for ($i = 0; $i < $rows; ++$i) {
@@ -164,7 +164,7 @@ class Server {
  */ 
 if (@$_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
 	
-	header('content-type: text/plain; charset=utf-8');
+	//header('content-type: text/plain; charset=utf-8');
 	//Server::Log('Call to serwer '.$_POST['sock'].' with action: '.$_POST['action']);
 	Server::Run();
 	
